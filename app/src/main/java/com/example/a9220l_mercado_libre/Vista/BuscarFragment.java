@@ -2,65 +2,72 @@ package com.example.a9220l_mercado_libre.Vista;
 
 import android.os.Bundle;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.a9220l_mercado_libre.Adaptadores.BuscarAdapter;
+import com.example.a9220l_mercado_libre.Interfaces.BuscarInterface;
+import com.example.a9220l_mercado_libre.Modelo.ProductoResults;
+import com.example.a9220l_mercado_libre.Presentador.BuscarPresenter;
 import com.example.a9220l_mercado_libre.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link BuscarFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class BuscarFragment extends Fragment {
+import java.util.ArrayList;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class BuscarFragment extends Fragment implements SearchView.OnQueryTextListener, BuscarInterface.Vista {
+
+     private BuscarInterface.Presenter presenter;
+    androidx.appcompat.widget.SearchView search;
+    private RecyclerView recyclerView;
+    private BuscarAdapter buscarAdapter;
 
     public BuscarFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BuscarFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static BuscarFragment newInstance(String param1, String param2) {
-        BuscarFragment fragment = new BuscarFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_buscar, container, false);
+        View root = inflater.inflate(R.layout.fragment_buscar, container, false);
+        recyclerView= root.findViewById(R.id.recyclerBuscar);
+        search= root.findViewById(R.id.search);
+        search.setOnQueryTextListener(this);
+        presenter= new BuscarPresenter(this);
+        return root;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String q) {
+        enviarBusqueda(q);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
+    @Override
+    public void enviarBusqueda(String q) {
+        presenter.recibirBusqueda(q);
+        search.clearFocus();
+    }
+
+    @Override
+    public void respuestaExitosa(ArrayList<ProductoResults> productos) {
+        buscarAdapter = new BuscarAdapter(productos,getContext());
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
+        recyclerView.setAdapter(buscarAdapter);
+        recyclerView.setVisibility(View.VISIBLE);
+        System.out.println("DIEGO: Llegaron los productos");
+
     }
 }
