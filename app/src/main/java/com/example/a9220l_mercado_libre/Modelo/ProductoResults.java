@@ -7,6 +7,24 @@ public class ProductoResults {
     private String price;
     private String title;
     private String thumbnail;
+    private String condition;
+    private String currency_id;
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    public String getCurrency_id() {
+        return currency_id;
+    }
+
+    public void setCurrency_id(String currency_id) {
+        this.currency_id = currency_id;
+    }
 
     public String getPrice() {
         return price;

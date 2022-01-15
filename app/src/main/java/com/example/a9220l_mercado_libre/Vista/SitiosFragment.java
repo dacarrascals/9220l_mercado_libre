@@ -1,66 +1,128 @@
 package com.example.a9220l_mercado_libre.Vista;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.a9220l_mercado_libre.Adaptadores.BuscarAdapter;
+import com.example.a9220l_mercado_libre.Adaptadores.SitiosAdapter;
+import com.example.a9220l_mercado_libre.Interfaces.SitiosInterface;
+import com.example.a9220l_mercado_libre.Modelo.ProductoResults;
+import com.example.a9220l_mercado_libre.Modelo.Sitios;
+import com.example.a9220l_mercado_libre.Presentador.SitiosPresenter;
 import com.example.a9220l_mercado_libre.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SitiosFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class SitiosFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class SitiosFragment extends Fragment implements SitiosInterface.Vista {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private SitiosInterface.Presenter presenter;
+    private RecyclerView recyclerViewSitios;
+    private SitiosAdapter sitiosAdapter;
+    private TextView npais;
+    private static List<Sitios> mantenerResultadosPaises;
+    private static int cont=0;
+
 
     public SitiosFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SitiosFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SitiosFragment newInstance(String param1, String param2) {
-        SitiosFragment fragment = new SitiosFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sitios, container, false);
+        View root = inflater.inflate(R.layout.fragment_sitios, container, false);
+        recyclerViewSitios= root.findViewById(R.id.recyclerSitios);
+        npais= root.findViewById(R.id.nombrepais);
+        presenter = new SitiosPresenter(this);
+        if(cont==0)
+        enviarBusqueda();
+        if(mantenerResultadosPaises!=null){
+            sitiosAdapter = new SitiosAdapter(mantenerResultadosPaises,getContext());
+            recyclerViewSitios.setLayoutManager(new GridLayoutManager(getContext(),2));
+            recyclerViewSitios.setAdapter(sitiosAdapter);
+            recyclerViewSitios.setVisibility(View.VISIBLE);
+
+        }
+        return root;
     }
+
+    @Override
+    public void enviarBusqueda() {
+    presenter.recibirBusqueda();
+    }
+
+    @Override
+    public void respuestaExitosa(List<Sitios> sites) {
+        addBandera(sites);
+        mantenerResultadosPaises=sites;
+        sitiosAdapter = new SitiosAdapter(sites,getContext());
+        recyclerViewSitios.setLayoutManager(new GridLayoutManager(getContext(),2));
+        recyclerViewSitios.setAdapter(sitiosAdapter);
+        recyclerViewSitios.setVisibility(View.VISIBLE);
+        cont++;
+
+    }
+
+public void addBandera (List<Sitios> sites ){
+    for (int i = 0; i < sites.size() ; i++) {
+        String nombre= sites.get(i).getName();
+        if(nombre.equals("Colombia"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.colombia));
+        else if(nombre.equals("Uruguay"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.uruguay));
+        else if (nombre.equals("Brasil"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.brasil));
+        else if (nombre.equals("Cuba"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.cuba));
+        else if (nombre.equals("Guatemala"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.guatemala));
+        else if (nombre.equals("Perú"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.peru));
+        else if (nombre.equals("Honduras"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.honduras));
+        else if (nombre.equals("Venezuela"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.venezuela));
+        else if (nombre.equals("Mexico"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.mexico));
+        else if (nombre.equals("Nicaragua"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.nicaragua));
+        else if (nombre.equals("Costa Rica"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.costarica));
+        else if (nombre.equals("Paraguay"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.paraguay));
+        else if (nombre.equals("Panamá"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.panama));
+        else if (nombre.equals("Chile"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.chile));
+        else if (nombre.equals("Ecuador"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.ecuador));
+        else if (nombre.equals("Argentina"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.argentina));
+        else if (nombre.equals("Bolivia"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.bolivia));
+        else if (nombre.equals("Dominicana"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.republicadominicana));
+        else if (nombre.equals("El Salvador"))
+            sites.get(i).setFoto(getResources().getDrawable(R.drawable.elsalvador));
+    }
+
+}
+
 }
